@@ -16,7 +16,7 @@ const slides = [
     title: "The space behind your next great shot.",
     description:
       "Discover beautiful studios with the lighting, equipment, and room to bring your vision to life.",
-    image: "/images/hero-photo.jpg",
+    image: "/images/hero-podcast.jpg",
     alt: "Photography studio with professional lighting equipment",
   },
   {
@@ -25,8 +25,8 @@ const slides = [
     title: "Great conversations deserve a great space.",
     description:
       "Find a recording-ready room for your next interview, podcast episode, or creative conversation.",
-    image: "/images/hero-podcast.jpg",
-    alt: "Podcast recording room with microphones",
+    image: "/images/hero-photo.jpg",
+    alt: "Photography studio with professional lighting equipment",
   },
   {
     id: 3,
