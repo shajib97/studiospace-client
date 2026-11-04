@@ -9,7 +9,7 @@ interface StudioCardProps {
 export default function StudioCard({ studio }: StudioCardProps) {
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card text-card-foreground shadow-sm">
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-4/3 overflow-hidden">
         <Image
           src={studio.imageUrl}
           alt={studio.title}
