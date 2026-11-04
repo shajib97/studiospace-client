@@ -8,3 +8,12 @@ export interface Studio{
  rating: number;
  reviewCount: number;
 }
+
+export interface StudioDetails extends Studio {
+  securityDeposit: number;
+  maxCapacity: number;
+  amenities: string[];
+  overview: string;
+  ownerName: string;
+  gallery?: string[];
+}
