@@ -50,6 +50,14 @@ export default function Navbar() {
     setLoggingOut(true);
 
     try {
+      const response = await fetch("/api/session/token", {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        toast.error("Unable to log out. Please try again.");
+        return;
+      }
       const { error } = await authClient.signOut();
 
       if (error) {
