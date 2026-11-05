@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
+import GitHubLoginButton from "@/components/auth/GitHubLoginButton";
 
 function LoginForm() {
   const router = useRouter();
@@ -147,6 +148,12 @@ function LoginForm() {
           callbackURL={searchParams.get("next") || "/"}
           disabled={loading}
         />
+        <div className="mt-3">
+          <GitHubLoginButton
+            callbackURL={searchParams.get("next") || "/"}
+            disabled={loading}
+          />
+        </div>
         <p className="mt-6 text-center text-sm text-muted-foreground">
           New to StudioSpace?{" "}
           <Link
