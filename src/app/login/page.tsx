@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
 
 function LoginForm() {
   const router = useRouter();
@@ -136,7 +137,16 @@ function LoginForm() {
             {loading ? "Logging in..." : "Log In"}
           </Button>
         </form>
+        <div className="my-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-xs text-muted-foreground">OR</span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
 
+        <GoogleLoginButton
+          callbackURL={searchParams.get("next") || "/"}
+          disabled={loading}
+        />
         <p className="mt-6 text-center text-sm text-muted-foreground">
           New to StudioSpace?{" "}
           <Link

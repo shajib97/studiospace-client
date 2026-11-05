@@ -1,9 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
+import { authClient } from "@/lib/auth-client";
 import ThemeToggle from "@/components/ThemeToggle";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Explore Studios", href: "/studios" },
@@ -11,12 +24,48 @@ const navLinks = [
   { label: "About Us", href: "/about" },
 ];
 
+const accountLinks = [
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Add New Studio", href: "/add-studio" },
+  { label: "My Studio Listings", href: "/my-listings" },
+  { label: "My Bookings", href: "/my-bookings" },
+];
+
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+
   const [menuOpen, setMenuOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const { data: session, isPending, error, refetch } = authClient.useSession();
 
   function closeMenu() {
     setMenuOpen(false);
+  }
+
+  async function handleLogout() {
+    if (loggingOut) return;
+
+    setLoggingOut(true);
+
+    try {
+      const { error } = await authClient.signOut();
+
+      if (error) {
+        toast.error(error.message || "Unable to log out. Please try again.");
+        return;
+      }
+
+      closeMenu();
+      toast.success("You have been logged out.");
+      router.replace("/");
+      router.refresh();
+    } catch {
+      toast.error("Unable to connect. Please try again.");
+    } finally {
+      setLoggingOut(false);
+    }
   }
 
   return (
@@ -26,7 +75,7 @@ export default function Navbar() {
           <Link
             href="/"
             onClick={closeMenu}
-            className="text-xl font-bold tracking-tight text-red-600"
+            className="shrink-0 text-xl font-bold tracking-tight text-red-600"
           >
             StudioSpace
           </Link>
@@ -48,23 +97,97 @@ export default function Navbar() {
             ))}
           </nav>
 
-          <div className="hidden items-center gap-3 lg:flex">
-            <Link
-              href="/login"
-              className="rounded-full px-4 py-2 text-sm font-medium hover:bg-muted"
-            >
-              Login
-            </Link>
+          <div className="flex shrink-0 items-center gap-2">
+            {isPending ? (
+              <div
+                role="status"
+                aria-label="Loading account"
+                className="size-9 rounded-full bg-muted motion-safe:animate-pulse"
+              />
+            ) : session ? (
+              <DropdownMenu
+                onOpenChange={(open) => {
+                  if (open) closeMenu();
+                }}
+              >
+                <DropdownMenuTrigger
+                  type="button"
+                  aria-label="Open account menu"
+                  className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                >
+                  <Avatar className="size-9">
+                    <AvatarImage
+                      src={session.user.image || undefined}
+                      alt={session.user.name || "Your profile"}
+                    />
+                    <AvatarFallback className="bg-red-600/10 font-semibold text-red-600">
+                      {session.user.name?.trim().charAt(0).toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
 
-            <Link
-              href="/register"
-              className="rounded-full bg-red-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
-            >
-              Register
-            </Link>
-          </div>
+                <DropdownMenuContent align="end" className="w-60">
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel>
+                      <p className="truncate font-semibold">
+                        {session.user.name}
+                      </p>
+                      <p className="truncate text-xs font-normal text-muted-foreground">
+                        {session.user.email}
+                      </p>
+                    </DropdownMenuLabel>
 
-          <div className="flex items-center gap-2">
+                    <DropdownMenuSeparator />
+
+                    {accountLinks.map((link) => (
+                      <DropdownMenuItem
+                        key={link.href}
+                        render={<Link href={link.href} />}
+                        onClick={closeMenu}
+                      >
+                        {link.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuGroup>
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    disabled={loggingOut}
+                    onClick={handleLogout}
+                    className="text-red-600"
+                  >
+                    {loggingOut ? "Logging out..." : "Logout"}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : error ? (
+              <button
+                type="button"
+                onClick={() => refetch()}
+                className="rounded-full border border-border px-3 py-2 text-xs"
+                aria-label="Retry loading account"
+              >
+                Retry
+              </button>
+            ) : (
+              <div className="hidden items-center gap-2 lg:flex">
+                <Link
+                  href="/login"
+                  className="rounded-full px-4 py-2 text-sm font-medium hover:bg-muted"
+                >
+                  Login
+                </Link>
+
+                <Link
+                  href="/register"
+                  className="rounded-full bg-red-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
+
             <ThemeToggle />
 
             <button
@@ -101,21 +224,25 @@ export default function Navbar() {
               </Link>
             ))}
 
-            <Link
-              href="/login"
-              onClick={closeMenu}
-              className="rounded-full px-4 py-2 text-sm font-medium hover:bg-muted"
-            >
-              Login
-            </Link>
+            {!isPending && !session && !error && (
+              <>
+                <Link
+                  href="/login"
+                  onClick={closeMenu}
+                  className="rounded-full px-4 py-2 text-sm font-medium hover:bg-muted"
+                >
+                  Login
+                </Link>
 
-            <Link
-              href="/register"
-              onClick={closeMenu}
-              className="rounded-full bg-red-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-red-700"
-            >
-              Register
-            </Link>
+                <Link
+                  href="/register"
+                  onClick={closeMenu}
+                  className="rounded-full bg-red-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-red-700"
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </nav>
         )}
       </div>
