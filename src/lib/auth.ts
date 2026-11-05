@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
 import { MongoClient } from "mongodb";
-
+import { APIError, createAuthMiddleware } from "better-auth/api";
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.DB_NAME;
 const secret = process.env.BETTER_AUTH_SECRET;
@@ -30,7 +30,25 @@ export const auth = betterAuth({
   secret,
 
   database: mongodbAdapter(db, { client }),
+hooks: {
+  before: createAuthMiddleware(async (ctx) => {
+    if (ctx.path === "/sign-up/email") {
+      const password = ctx.body?.password;
 
+      if (
+        typeof password !== "string" ||
+        password.length < 6 ||
+        !/[A-Z]/.test(password) ||
+        !/[a-z]/.test(password)
+      ) {
+        throw new APIError("BAD_REQUEST", {
+          message:
+            "Password must contain at least 6 characters, an uppercase letter, and a lowercase letter.",
+        });
+      }
+    }
+  }),
+},
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 6,
