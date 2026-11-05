@@ -1,4 +1,4 @@
-import { SignJWT } from "jose";
+import { createApiToken } from "@/lib/api-token";
 import { NextResponse, type NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 
@@ -31,14 +31,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const token = await new SignJWT({})
-    .setProtectedHeader({ alg: "HS256" })
-    .setSubject(session.user.id)
-    .setIssuer("studiospace-auth")
-    .setAudience("studiospace-api")
-    .setIssuedAt()
-    .setExpirationTime("5m")
-    .sign(new TextEncoder().encode(secret));
+  const token = await createApiToken(session.user.id);
 
   const response = NextResponse.json({ success: true });
 
