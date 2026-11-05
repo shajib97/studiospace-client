@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Image from "next/image";
+import StudioGallery from "@/components/studios/StudioGallery";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { StudioDetails } from "@/types/studio";
@@ -90,16 +90,11 @@ async function StudioDetailsContent({ params }: StudioDetailsPageProps) {
         </div>
       </div>
 
-      <div className="relative mt-8 aspect-4/3 overflow-hidden rounded-3xl md:aspect-16/7">
-        <Image
-          src={studio.imageUrl}
-          alt={studio.title}
-          fill
-          sizes="(max-width: 1280px) 100vw, 1280px"
-          loading="eager"
-          className="object-cover"
-        />
-      </div>
+      <StudioGallery
+        title={studio.title}
+        imageUrl={studio.imageUrl}
+        gallery={studio.gallery}
+      />
 
       <div className="mt-12 grid items-start gap-10 lg:grid-cols-3">
         <div className="space-y-10 lg:col-span-2">
