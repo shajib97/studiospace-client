@@ -3,6 +3,7 @@ import StudioGallery from "@/components/studios/StudioGallery";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { StudioDetails } from "@/types/studio";
+import BookStudioButton from "@/components/studios/BookStudioButton";
 
 interface StudioDetailsPageProps {
   params: Promise<{ id: string }>;
@@ -126,7 +127,32 @@ async function StudioDetailsContent({ params }: StudioDetailsPageProps) {
 
           <section className="border-t border-border pt-8">
             <h2 className="text-2xl font-semibold">Meet your host</h2>
+            <section className="border-t border-border pt-8">
+              <h2 className="text-2xl font-semibold">Studio Reviews</h2>
 
+              {studio.reviews?.length ? (
+                <div className="mt-5 space-y-4">
+                  {studio.reviews.map((review, index) => (
+                    <article
+                      key={`${review.name}-${index}`}
+                      className="rounded-2xl border border-border bg-card p-5"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <h3 className="font-semibold">{review.name}</h3>
+                        <p className="text-sm font-medium text-foreground">
+                          ★ {review.rating} / 5
+                        </p>
+                      </div>
+                      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                        {review.comment}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-4 text-muted-foreground">No reviews yet.</p>
+              )}
+            </section>
             <p className="mt-4 text-muted-foreground">
               Hosted by{" "}
               <span className="font-medium text-foreground">
@@ -157,13 +183,7 @@ async function StudioDetailsContent({ params }: StudioDetailsPageProps) {
             </div>
           </dl>
 
-          <button
-            type="button"
-            disabled
-            className="mt-7 w-full cursor-not-allowed rounded-full bg-red-600 px-5 py-3 text-sm font-semibold text-white opacity-60"
-          >
-            Booking coming soon
-          </button>
+          <BookStudioButton studioId={studio._id} title={studio.title} />
 
           <p className="mt-3 text-center text-xs text-muted-foreground">
             Prices are listed in USD.

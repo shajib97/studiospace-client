@@ -67,7 +67,14 @@ async function MyListingsContent() {
         <div key={studio._id} className="flex flex-col gap-3">
           <StudioCard studio={studio} />
 
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-3">
+            <Link
+              href={`/studios/edit/${studio._id}`}
+              className="inline-flex items-center rounded-full border border-border px-4 text-sm font-medium hover:bg-muted"
+            >
+              Edit
+            </Link>
+
             <DeleteStudioButton studioId={studio._id} title={studio.title} />
           </div>
         </div>

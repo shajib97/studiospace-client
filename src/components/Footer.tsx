@@ -34,6 +34,21 @@ export default function Footer() {
             >
               View our project on GitHub →
             </a>
+            <a
+              href="https://x.com/intent/post?text=Explore%20creative%20studios%20on%20StudioSpace"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Share StudioSpace on X"
+              className="mt-4 flex size-9 items-center justify-center rounded-full border border-border hover:text-red-600"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="size-4 fill-current"
+                aria-hidden="true"
+              >
+                <path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.59-6.64 7.59H.47l8.6-9.84L0 1.15h7.59l5.25 6.94 6.06-6.94Zm-1.29 19.5h2.04L6.49 3.24H4.3l13.31 17.41Z" />
+              </svg>
+            </a>
           </div>
 
           <div>

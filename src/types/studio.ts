@@ -16,4 +16,9 @@ export interface StudioDetails extends Studio {
   overview: string;
   ownerName: string;
   gallery?: string[];
+  reviews?: {
+  name: string;
+  rating: number;
+  comment: string;
+}[];
 }

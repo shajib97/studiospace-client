@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 import { createApiToken } from "@/lib/api-token";
 
-export async function DELETE(
+async function forwardStudioRequest(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -25,11 +25,13 @@ export async function DELETE(
     );
   }
 
-  const session = await auth.api.getSession({ headers: request.headers });
+  const session = await auth.api.getSession({
+    headers: request.headers,
+  });
 
   if (!session) {
     return NextResponse.json(
-      { message: "Please log in to delete a studio." },
+      { message: "Please log in to manage your studio." },
       { status: 401 },
     );
   }
@@ -37,15 +39,18 @@ export async function DELETE(
   try {
     const { id } = await params;
     const token = await createApiToken(session.user.id);
+    const isEdit = request.method === "PATCH";
 
     const response = await fetch(
       `${apiURL}/api/studios/${encodeURIComponent(id)}`,
       {
-        method: "DELETE",
+        method: request.method,
         headers: {
           Origin: origin,
           Cookie: `studiospace_api_token=${token}`,
+          ...(isEdit ? { "Content-Type": "application/json" } : {}),
         },
+        body: isEdit ? await request.text() : undefined,
       },
     );
 
@@ -59,3 +64,8 @@ export async function DELETE(
     );
   }
 }
+
+export {
+  forwardStudioRequest as DELETE,
+  forwardStudioRequest as PATCH,
+};
